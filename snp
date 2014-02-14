@@ -1,4 +1,4 @@
-snippets_dir="/Users/adaml/.snp"
+snippets_dir=~/".snp"
 
 if [ ! -d $snippets_dir ]; then
     echo "ERROR: $snippets_dir doesn't exist."
@@ -13,6 +13,7 @@ fi
 
 case $1 in
     l)
+        echo "snp snippets:"
         echo "$(ls -R $snippets_dir)" ;;
     m)
         if [[ -e $snippets_dir/$2 && -d $snippets_dir/$3 ]]; then
@@ -41,12 +42,12 @@ case $1 in
             exit 1
         fi ;;
     *)
-        echo "snp usage:"
-        echo "snp n <name> <text> # new"
-        echo "snp n group <name> # new group"
-        echo "snp l # list"
-        echo "snp m <name> <group> # move"
-        echo "snp r <name> # remove"
-        echo "snp r group <name> # remove group"
-        echo "snp c <name> # copy" ;;
+        echo -e "snp usage:\n"
+        echo "snp n <name> \"<text>\"     # new"
+        echo "snp n group <name>        # new group"
+        echo "snp l                     # list snippets"
+        echo "snp m <name> <group>      # move"
+        echo "snp r <name>              # remove"
+        echo "snp r group <name>        # remove group"
+        echo "snp c <name>              # copy" ;;
 esac
