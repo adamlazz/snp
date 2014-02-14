@@ -14,10 +14,12 @@ Running `snp` for the first time will give you the option to create your snippet
 
 ## Usage
 
-`snp n <name> "<text>"`     # new
-`snp n group <name>`        # new group
-`snp l`                     # list snippets
-`snp m <name> <group>`      # move
-`snp r <name>`              # remove
-`snp r group <name>`        # remove group
-`snp c <name>`              # copy
+```
+snp n <name> "<text>"     # new
+snp n group <name>        # new group
+snp l                     # list snippets
+snp m <name> <group>      # move
+snp r <name>              # remove
+snp r group <name>        # remove group
+snp c <name>              # copy
+```
