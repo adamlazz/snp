@@ -21,5 +21,5 @@ snp l                     # list snippets
 snp m <name> <group>      # move
 snp r <name>              # remove
 snp r group <name>        # remove group
-snp c <name>              # copy
+snp c <name>              # copy snippet (to clipboard)
 ```
