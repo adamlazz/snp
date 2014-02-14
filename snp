@@ -1,3 +1,5 @@
+#!/bin/sh
+
 snippets_dir=~/".snp"
 
 # Check for/create snippet dir
@@ -53,3 +55,5 @@ case $1 in
         echo "snp r group <name>        # remove group"
         echo "snp c <name>              # copy snippet (to clipboard)" ;;
 esac
+
+exit 0
