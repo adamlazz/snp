@@ -15,13 +15,13 @@ Running `snp` for the first time will give you the option to create your snippet
 ## Usage
 
 ```
-snp new <name> "<text>"   # new snippet
-snp new group <name>      # new group
-snp list                  # list snippets
-snp move <name> <group>   # move
-snp remove <name>         # remove
-snp remove group <name>   # remove group
-snp create <name>         # copy snippet (to clipboard)
+snp new <name> "<text>"   # New snippet
+snp new group <name>      # New group
+snp list                  # List snippets
+snp move <name> <group>   # Move
+snp remove <name>         # Remove snippet
+snp remove group <name>   # Remove group
+snp copy <name>           # Copy snippet (to clipboard)
 ```
 
 * To reduce keystrokes, you are able to only use the first character of each functions name. For example, `snp new` can be replaced by `snp n`.
