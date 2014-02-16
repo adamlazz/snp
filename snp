@@ -95,6 +95,11 @@ paste() {
     fi
 }
 
+if [ ! $(uname -s) = "Darwin" ]; then
+    alias pbcopy='xsel --clipboard --input'
+    alias pbpaste='xsel --clipboard --output'
+fi
+
 snippets_dir=~/".snp"
 
 # Check for/create snippet dir
