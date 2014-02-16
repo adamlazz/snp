@@ -22,6 +22,7 @@ snp move <name> <group>   # Move
 snp remove <name>         # Remove snippet
 snp remove group <name>   # Remove group
 snp copy <name>           # Copy snippet (to clipboard)
+snp paste <name>          # Paste snippet (from clipboard)
 ```
 
 * To reduce keystrokes, you are able to only use the first character of each functions name. For example, `snp new` can be replaced by `snp n`.

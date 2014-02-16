@@ -1,5 +1,100 @@
 #!/bin/sh
 
+list() {
+    echo "snp snippets:\n"
+    echo "$(ls -R $snippets_dir)"
+}
+
+move() {
+    if [[ "$2" == "" && $3 == "" ]]; then
+        echo "snp usage:\n"
+        echo "snp move <name> <group>"
+    elif [[ -e $snippets_dir/$2 ]]; then
+        if -d $snippets_dir/$3 ]]; then
+            mv $snippets_dir/$2 $snippets_dir/$3/$2
+        else
+            echo "ERROR: Group $snippets_dir/$3 does not exist."; exit 1
+        fi
+    else
+        echo "ERROR: Snippet $2 does not exist."; exit 1
+    fi
+}
+
+new() {
+    if [[ "$2" == "" && "$3" == "" ]]; then
+        echo "snp usage:\n"
+        echo "snp new <name> \"<text>\""
+        echo "snp new group <name>"
+    elif [[ "$2" == "group" ]]; then # New group
+        if [[ "$3" != "" ]]; then
+            mkdir $snippets_dir/$3
+            echo "Created new group \"$3\"."
+        else
+            echo "snp usage:\n"
+            echo "snp new group <name>"
+        fi
+    else # New snippet
+        if [[ "$3" != "" ]]; then
+            printf "$3" >> $snippets_dir/$2
+            echo "Created new snippet \"$2\"."
+        else
+            echo "snp usage:\n"
+            echo "snp new <name> \"<text>\""
+        fi
+    fi
+}
+
+remove() {
+    if [[ "$2" == "" ]]; then
+        echo "snp usage:\n"
+        echo "snp remove <name>"
+        echo "snp remove group <name>"
+    elif [[ "$2" == "group" ]]; then # Remove group
+        if [[ "$3" != "" ]]; then
+            if [[ -e "$3" ]]; then
+                rm -rf $snippets_dir/$3
+                echo "Removed group \"$3\"."
+            else
+                echo "ERROR: Group $3 does not exist."; exit 1
+            fi
+        else
+            echo "snp usage:\n"
+            echo "snp remove group <name>"
+        fi
+    elif [[ "$2" != "" ]]; then # Remove snippet
+        if [[ -e $snippets_dir/$2 ]]; then
+            rm $snippets_dir/$2
+            echo "Removed snippet \"$2\"."
+        else
+            echo "ERROR: Snippet $2 does not exist."; exit 1
+        fi
+    fi
+}
+
+copy() {
+    if [[ "$2" == "" ]]; then
+        echo "snp usage:\n"
+        echo "snp copy <name> # Copy snippet (to clipboard)"
+    elif [[ -e $snippets_dir/$2 ]]; then
+        cat "$snippets_dir/$2" | pbcopy
+        echo "Snippet text copied to clipboard."
+    else
+        echo "ERROR: Snippet $2 does not exist."; exit 1
+    fi
+}
+
+paste() {
+    if [[ "$2" == "" ]]; then
+        echo "snp usage:\n"
+        echo "snp paste <name> # Paste snippet (from clipboard)"
+    elif [[ -e $snippets_dir/$2 ]]; then
+        cat "$snippets_dir/$2" | pbcopy;
+        pbpaste
+    else
+        echo "ERROR: Snippet $2 does not exist."; exit 1
+    fi
+}
+
 snippets_dir=~/".snp"
 
 # Check for/create snippet dir
@@ -16,71 +111,17 @@ fi
 
 case $1 in
     l|list) # List
-        echo "snp snippets:\n"
-        echo "$(ls -R $snippets_dir)" ;;
+        list ;;
     m|move) # Move
-        if [[ "$2" == "" && $3 == "" ]]; then
-            echo "snp usage:\n"
-            echo "snp move <name> <group>"
-        elif [[ -e $snippets_dir/$2 ]]; then
-            if -d $snippets_dir/$3 ]]; then
-                mv $snippets_dir/$2 $snippets_dir/$3/$2
-            else
-                echo "MOVE TO DIR ERROR: Group $snippets_dir/$3 does not exist."; exit 1
-            fi
-        else
-            echo "MOVE FROM EXIST ERROR: Snippet $2 does not exist."; exit 1
-        fi ;;
+        move $@ ;;
     n|new) # New
-        if [[ "$2" == "" && "$3" == "" ]]; then
-            echo "snp usage:\n"
-            echo "snp new <name> \"<text>\""
-            echo "snp new group <name>"
-        elif [[ "$2" == "group" ]]; then # New group
-            if [[ "$3" != "" ]]; then
-                mkdir $snippets_dir/$3
-            else
-                echo "snp new group <name>"
-            fi
-        else # New snippet
-            if [[ "$3" != "" ]]; then
-                echo -n "$3" >> $snippets_dir/$2
-            else
-                echo "snp new <name> \"<text>\""
-            fi
-        fi ;;
+        new $@ ;;
     r|remove) # Remove
-        if [[ "$2" == "" ]]; then
-            echo "snp usage:\n"
-            echo "snp remove <name>"
-            echo "snp remove group <name>"
-        elif [[ "$2" == "group" ]]; then # Remove group
-            if [[ "$3" != "" ]]; then
-                if [[ -e "$3" ]]; then
-                    rm -rf $snippets_dir/$3
-                else
-                    echo "REMOVE GROUP DIR ERROR: Group $3 does not exist."; exit 1
-                fi
-            else
-                echo "snp remove group <name>"
-            fi
-        elif [[ "$2" != "" ]]; then # Remove snippet
-            if [[ -e $snippets_dir/$2 ]]; then
-                rm $snippets_dir/$2
-            else
-                echo "REMOVE SNIPPET DIR ERROR: Snippet $2 does not exist."; exit 1
-            fi
-        fi ;;
+        remove $@ ;;
     c|copy) # Copy
-        if [[ "$2" == "" ]]; then
-            echo "snp usage:\n"
-            echo "snp copy <name> # copy snippet (to clipboard)"
-        elif [[ -e $snippets_dir/$2 ]]; then
-            cat "$snippets_dir/$2" | pbcopy
-            echo "Snippet text copied to clipboard."
-        else
-            echo "COPY EXIST ERROR: Snippet $2 does not exist."; exit 1
-        fi ;;
+        copy $@ ;;
+    p|paste) # Paste
+        paste $@ ;;
     *)
         echo "snp usage:\n"
         echo "snp new <name> \"<text>\"   # New snippet"
@@ -89,7 +130,8 @@ case $1 in
         echo "snp move <name> <group>   # Move"
         echo "snp remove <name>         # Remove snippet"
         echo "snp remove group <name>   # Remove group"
-        echo "snp copy <name>           # Copy snippet (to clipboard)" ;;
+        echo "snp copy <name>           # Copy snippet (to clipboard)"
+        echo "snp paste <name>          # Paste snippet text (to terminal)" ;;
 esac
 
 exit 0
