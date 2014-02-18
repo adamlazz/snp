@@ -25,7 +25,7 @@ new() {
         echo "snp usage:\n"
         echo "snp new <name> \"<text>\""
         echo "snp new group <name>"
-    elif [[ "$2" == "group" ]]; then # New group
+    elif [[ "$2" == "group" || "$2" == "g" ]]; then # New group
         if [[ "$3" != "" ]]; then
             mkdir $snippets_dir/$3
             echo "Created new group \"$3\"."
@@ -34,12 +34,22 @@ new() {
             echo "snp new group <name>"
         fi
     else # New snippet
-        if [[ "$3" != "" ]]; then
-            printf "$3" >> $snippets_dir/$2
-            echo "Created new snippet \"$2\"."
-        else
+        if [[ "$2" == "" ]]; then
             echo "snp usage:\n"
             echo "snp new <name> \"<text>\""
+        else
+            if [[ -e $snippets_dir/$2 ]]; then
+                echo "Snippet $snippet_dir/$2 already exists."
+                echo "Overwrite? [y/n]"
+                read yn
+                if [[ $yn == "y" || $yn == "Y" ]]; then
+                    rm $snippets_dir/$2
+                else
+                    return
+                fi
+            fi
+            printf "$3" >> $snippets_dir/$2
+            echo "Created new snippet \"$2\"."
         fi
     fi
 }
@@ -49,9 +59,9 @@ remove() {
         echo "snp usage:\n"
         echo "snp remove <name>"
         echo "snp remove group <name>"
-    elif [[ "$2" == "group" ]]; then # Remove group
+    elif [[ "$2" == "group" || "$2" == "g" ]]; then # Remove group
         if [[ "$3" != "" ]]; then
-            if [[ -e "$3" ]]; then
+            if [[ -e "$snippets_dir/$3" ]]; then
                 rm -rf $snippets_dir/$3
                 echo "Removed group \"$3\"."
             else
@@ -72,33 +82,48 @@ remove() {
 }
 
 copy() {
-    if [[ "$2" == "" ]]; then
-        echo "snp usage:\n"
-        echo "snp copy <name> # Copy snippet (to clipboard)"
-    elif [[ -e $snippets_dir/$2 ]]; then
-        cat "$snippets_dir/$2" | pbcopy
+    if [[ "$1" == "" ]]; then
+        usage
+    elif [[ -e $snippets_dir/$1 ]]; then
+        if [ ! $(uname -s) = "Darwin" ]; then
+            alias pbcopy='xsel --clipboard --input'
+        fi
+
+        cat "$snippets_dir/$1" | pbcopy
         echo "Snippet text copied to clipboard."
     else
-        echo "ERROR: Snippet $2 does not exist."; exit 1
+        echo "ERROR: Snippet $1 does not exist."; exit 1
     fi
 }
 
 paste() {
     if [[ "$2" == "" ]]; then
-        echo "snp usage:\n"
-        echo "snp paste <name> # Paste snippet (from clipboard)"
+        usage
     elif [[ -e $snippets_dir/$2 ]]; then
-        cat "$snippets_dir/$2" | pbcopy;
+        if [ ! $(uname -s) = "Darwin" ]; then
+            alias pbcopy='xsel --clipboard --input'
+            alias pbpaste='xsel --clipboard --output'
+        fi
+
+        cat "$snippets_dir/$2" | pbcopy
         pbpaste
     else
         echo "ERROR: Snippet $2 does not exist."; exit 1
     fi
 }
 
-if [ ! $(uname -s) = "Darwin" ]; then
-    alias pbcopy='xsel --clipboard --input'
-    alias pbpaste='xsel --clipboard --output'
-fi
+usage() {
+    echo "snp usage:\n"
+    echo "snp <name>                # Copy snippet to clipboard"
+    echo "snp paste <name>          # Paste name (from clipboard)"
+    echo "snp new <name> \"<text>\"   # New snippet"
+    echo "snp new group <name>      # New group"
+    echo "snp list                  # List snippets"
+    echo "snp move <name> <group>   # Move snippet to group"
+    echo "snp remove <name>         # Remove snippet"
+    echo "snp remove group <name>   # Remove group"
+    echo "snp help                  # Display usage"
+}
 
 snippets_dir=~/".snp"
 
@@ -109,34 +134,27 @@ if [[ ! -d $snippets_dir ]]; then
     read yn
     if [[ $yn == "y" || $yn == "Y" ]]; then
         mkdir $snippets_dir
+        echo "$snippets_dir created"
     else
-        exit 1
+        exit 0
     fi
 fi
 
 case $1 in
-    l|list) # List
+    p|paste)
+        paste "$@" ;;
+    n|new)
+        new "$@" ;;
+    l|list)
         list ;;
-    m|move) # Move
-        move $@ ;;
-    n|new) # New
-        new $@ ;;
-    r|remove) # Remove
-        remove $@ ;;
-    c|copy) # Copy
-        copy $@ ;;
-    p|paste) # Paste
-        paste $@ ;;
+    m|move)
+        move "$@" ;;
+    r|remove)
+        remove "$@" ;;
+    h|help)
+        usage ;;
     *)
-        echo "snp usage:\n"
-        echo "snp new <name> \"<text>\"   # New snippet"
-        echo "snp new group <name>      # New group"
-        echo "snp list                  # List snippets"
-        echo "snp move <name> <group>   # Move"
-        echo "snp remove <name>         # Remove snippet"
-        echo "snp remove group <name>   # Remove group"
-        echo "snp copy <name>           # Copy snippet (to clipboard)"
-        echo "snp paste <name>          # Paste snippet text (to terminal)" ;;
+        copy "$@" ;;
 esac
 
 exit 0
