@@ -1,17 +1,17 @@
-#!/bin/sh
+#!/bin/bash
 
 list() {
-    echo "snp snippets:\n"
-    echo "$(ls -R $snippets_dir)"
+    echo -e "snp snippets:\n"
+    ls -R $snippets_dir
 }
 
 move() {
     if [[ "$2" == "" && $3 == "" ]]; then
-        echo "snp usage:\n"
+        echo -e "snp usage:\n"
         echo "snp move <name> <group>"
     elif [[ -e $snippets_dir/$2 ]]; then
-        if -d $snippets_dir/$3 ]]; then
-            mv $snippets_dir/$2 $snippets_dir/$3/$2
+        if [[ -d $snippets_dir/$3 ]]; then
+            mv "$snippets_dir/$2" "$snippets_dir/$3/$2"
         else
             echo "ERROR: Group $snippets_dir/$3 does not exist."; exit 1
         fi
@@ -22,33 +22,33 @@ move() {
 
 new() {
     if [[ "$2" == "" && "$3" == "" ]]; then
-        echo "snp usage:\n"
-        echo "snp new <name> \"<text>\""
+        echo -e "snp usage:\n"
+        echo 'snp new <name> "<text>"'
         echo "snp new group <name>"
     elif [[ "$2" == "group" || "$2" == "g" ]]; then # New group
         if [[ "$3" != "" ]]; then
-            mkdir $snippets_dir/$3
+            mkdir "$snippets_dir/$3"
             echo "Created new group \"$3\"."
         else
-            echo "snp usage:\n"
+            echo -e "snp usage:\n"
             echo "snp new group <name>"
         fi
     else # New snippet
         if [[ "$2" == "" ]]; then
-            echo "snp usage:\n"
-            echo "snp new <name> \"<text>\""
+            echo -e "snp usage:\n"
+            echo 'snp new <name> "<text>"'
         else
             if [[ -e $snippets_dir/$2 ]]; then
                 echo "Snippet $snippet_dir/$2 already exists."
                 echo "Overwrite? [y/n]"
                 read yn
-                if [[ $yn == "y" || $yn == "Y" ]]; then
-                    rm $snippets_dir/$2
+                if [[ ${yn,} == y* ]]; then
+                    rm "$snippets_dir/$2"
                 else
                     return
                 fi
             fi
-            printf "$3" >> $snippets_dir/$2
+            printf "%s" "$3" >> "$snippets_dir/$2"
             echo "Created new snippet \"$2\"."
         fi
     fi
@@ -56,24 +56,24 @@ new() {
 
 remove() {
     if [[ "$2" == "" ]]; then
-        echo "snp usage:\n"
+        echo -e "snp usage:\n"
         echo "snp remove <name>"
         echo "snp remove group <name>"
     elif [[ "$2" == "group" || "$2" == "g" ]]; then # Remove group
         if [[ "$3" != "" ]]; then
             if [[ -e "$snippets_dir/$3" ]]; then
-                rm -rf $snippets_dir/$3
+                rm -rf "$snippets_dir/$3"
                 echo "Removed group \"$3\"."
             else
                 echo "ERROR: Group $3 does not exist."; exit 1
             fi
         else
-            echo "snp usage:\n"
+            echo -e "snp usage:\n"
             echo "snp remove group <name>"
         fi
     elif [[ "$2" != "" ]]; then # Remove snippet
         if [[ -e $snippets_dir/$2 ]]; then
-            rm $snippets_dir/$2
+            rm "$snippets_dir/$2"
             echo "Removed snippet \"$2\"."
         else
             echo "ERROR: Snippet $2 does not exist."; exit 1
@@ -82,44 +82,39 @@ remove() {
 }
 
 blanks() {
-    data=$(cat $1)
-    count=0
+    local data=$(< "$1")
+    local count=0
+    local result=""
+
     OIFS=$IFS
     IFS="@"
-    blanx=$(echo "$data" | tr -d -c '@' | wc -c | awk '{print $1}')
+    local numblanks=$(echo "$data" | tr -d -c '@' | wc -c | awk '{print $1}')
 
-    result=""
-
-    for x in $data; do
-        if [ $count -eq $blanx ]; then
-            echo "$x"
-            result="$result$x"
+    for token in $data; do
+        if [ $count -eq $numblanks ]; then
+            echo "$token"
+            result="$result$token"
             break
         fi
-        echo "$x"
-        result="$result$x"
+        echo "$token"
+        result="$result$token"
         read -p"snp> " v
         result="$result$v"
-        count=`expr $count + 1`
+        (( count++ ))
     done
     IFS=$OIFS
 
-    printf "$result" >> $1-tmp
+    printf "%s" "$result" >> "$1-tmp"
 }
 
 copy() {
     if [[ "$1" == "" ]]; then
         usage
     elif [[ -e $snippets_dir/$1 ]]; then
-        if [ ! $(uname -s) = "Darwin" ]; then
-            alias pbcopy='xsel --clipboard --input'
-        fi
-
-        blanks $snippets_dir/$1
-        cat $snippets_dir/$1-tmp | pbcopy
+        blanks "$snippets_dir/$1"
+        cat "$snippets_dir/$1-tmp" | pbcopy
         echo "Snippet text copied to clipboard."
-
-        rm $snippets_dir/$1-tmp
+        rm "$snippets_dir/$1-tmp"
     else
         echo "ERROR: Snippet $1 does not exist."; exit 1
     fi
@@ -129,26 +124,20 @@ paste() {
     if [[ "$2" == "" ]]; then
         usage
     elif [[ -e $snippets_dir/$2 ]]; then
-        if [ ! $(uname -s) = "Darwin" ]; then
-            alias pbcopy='xsel --clipboard --input'
-            alias pbpaste='xsel --clipboard --output'
-        fi
-
-        blanks $snippets_dir/$2
-        cat $snippets_dir/$2-tmp | pbcopy
+        blanks "$snippets_dir/$2"
+        cat "$snippets_dir/$2-tmp" | pbcopy
         pbpaste
-
-        rm $snippets_dir/$2-tmp
+        rm "$snippets_dir/$2-tmp"
     else
         echo "ERROR: Snippet $2 does not exist."; exit 1
     fi
 }
 
 usage() {
-    echo "snp usage:\n"
+    echo -e "snp usage:\n"
     echo "snp <name>                # Copy snippet to clipboard"
     echo "snp paste <name>          # Paste name (from clipboard)"
-    echo "snp new <name> \"<text>\"   # New snippet"
+    echo 'snp new <name> "<text>"   # New snippet'
     echo "snp new group <name>      # New group"
     echo "snp list                  # List snippets"
     echo "snp move <name> <group>   # Move snippet to group"
@@ -159,13 +148,21 @@ usage() {
 
 snippets_dir=~/".snp"
 
-# Check for/create snippet dir
+# Set up copy and paste functions based on OS
+case $(uname -a) in
+    Darwin) : ;;
+    *)
+        alias pbcopy='xsel --clipboard --input'
+        alias pbpaste='xsel --clipboard --output' ;;
+esac
+
+# Check for/create snippet directory
 if [[ ! -d $snippets_dir ]]; then
     echo "ERROR: $snippets_dir doesn't exist."
     echo "Create it now? [y/n]"
     read yn
-    if [[ $yn == "y" || $yn == "Y" ]]; then
-        mkdir $snippets_dir
+    if [[ ${yn,} == y* ]]; then
+        mkdir "$snippets_dir"
         echo "$snippets_dir created"
     else
         exit 0
