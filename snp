@@ -42,7 +42,7 @@ new() {
                 echo "Snippet $snippet_dir/$2 already exists."
                 echo "Overwrite? [y/n]"
                 read yn
-                if [[ ${yn,} == y* ]]; then
+                if [[ ${yn} == y* ]]; then
                     rm "$snippets_dir/$2"
                 else
                     return
@@ -98,8 +98,8 @@ blanks() {
         fi
         echo "$token"
         result="$result$token"
-        read -p"snp> " v
-        result="$result$v"
+        read -p"snp> " response
+        result="$result$response"
         (( count++ ))
     done
     IFS=$OIFS
@@ -150,7 +150,8 @@ snippets_dir=~/".snp"
 
 # Set up copy and paste functions based on OS
 case $(uname -a) in
-    Darwin) : ;;
+    Darwin)
+        : ;;
     *)
         alias pbcopy='xsel --clipboard --input'
         alias pbpaste='xsel --clipboard --output' ;;
@@ -161,7 +162,7 @@ if [[ ! -d $snippets_dir ]]; then
     echo "ERROR: $snippets_dir doesn't exist."
     echo "Create it now? [y/n]"
     read yn
-    if [[ ${yn,} == y* ]]; then
+    if [[ ${yn} == y* ]]; then
         mkdir "$snippets_dir"
         echo "$snippets_dir created"
     else
