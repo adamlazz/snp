@@ -35,4 +35,6 @@ snp help                  # Display usage
 
 To create a snippet with a blank in it, use the `@` character. For example, `snp new <name> "hello @ world"`.
 
+To use a `@` character in a snippet (not as a blank), use `\@`.
+
 When copying or pasting snippets, the user is guided through filling the blanks of the snippet.

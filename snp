@@ -96,10 +96,16 @@ blanks() {
             result="$result$token"
             break
         fi
-        echo "$token"
-        result="$result$token"
-        read -p"snp> " response
-        result="$result$response"
+
+        if [ "${token:${#token} - 1}" != "\\" ]; then
+            echo "$token"
+            result="$result$token"
+            read -p"snp> " response
+            result="$result$response"
+        else # Escape blanks
+            echo "${token%?}@"
+            result="$result${token%?}@"
+        fi
         (( count++ ))
     done
     IFS=$OIFS
