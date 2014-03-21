@@ -48,7 +48,7 @@ new() {
                     return
                 fi
             fi
-            printf "%s" "$3" >> "$snippets_dir/$2"
+            printf "$3" >> "$snippets_dir/$2"
             echo "Created new snippet \"$2\"."
         fi
     fi
@@ -110,7 +110,7 @@ blanks() {
     done
     IFS=$OIFS
 
-    printf "%s" "$result" >> "$1-tmp"
+    printf "$result" >> "$1-tmp"
 }
 
 copy() {
