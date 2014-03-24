@@ -165,7 +165,7 @@ esac
 
 # Check for/create snippet directory
 if [[ ! -d $snippets_dir ]]; then
-    echo "ERROR: $snippets_dir doesn't exist."
+    echo "$snippets_dir doesn't exist."
     echo "Create it now? [y/n]"
     read yn
     if [[ ${yn} == y* ]]; then
