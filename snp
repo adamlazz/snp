@@ -2,15 +2,15 @@
 
 list() {
     echo -e "snp snippets:\n"
-    ls -R $snippets_dir
+    ls -R "$snippets_dir"
 }
 
 move() {
     if [[ "$2" == "" && $3 == "" ]]; then
         echo -e "snp usage:\n"
         echo "snp move <name> <group>"
-    elif [[ -e $snippets_dir/$2 ]]; then
-        if [[ -d $snippets_dir/$3 ]]; then
+    elif [[ -e "$snippets_dir/$2" ]]; then
+        if [[ -d "$snippets_dir/$3" ]]; then
             mv "$snippets_dir/$2" "$snippets_dir/$3/$2"
         else
             echo "ERROR: Group $snippets_dir/$3 does not exist."; exit 1
@@ -38,7 +38,7 @@ new() {
             echo -e "snp usage:\n"
             echo 'snp new <name> "<text>"'
         else
-            if [[ -e $snippets_dir/$2 ]]; then
+            if [[ -e "$snippets_dir/$2" ]]; then
                 echo "Snippet $snippet_dir/$2 already exists."
                 echo "Overwrite? [y/n]"
                 read yn
@@ -48,7 +48,7 @@ new() {
                     return
                 fi
             fi
-            printf "$3" >> "$snippets_dir/$2"
+            printf "%s" "$3" >> "$snippets_dir/$2"
             echo "Created new snippet \"$2\"."
         fi
     fi
@@ -72,7 +72,7 @@ remove() {
             echo "snp remove group <name>"
         fi
     elif [[ "$2" != "" ]]; then # Remove snippet
-        if [[ -e $snippets_dir/$2 ]]; then
+        if [[ -e "$snippets_dir/$2" ]]; then
             rm "$snippets_dir/$2"
             echo "Removed snippet \"$2\"."
         else
@@ -91,7 +91,7 @@ blanks() {
     local numblanks=$(echo "$data" | tr -d -c '@' | wc -c | awk '{print $1}')
 
     for token in $data; do
-        if [ $count -eq $numblanks ]; then
+        if [ $count -eq "$numblanks" ]; then
             echo "$token"
             result="$result$token"
             break
@@ -110,15 +110,15 @@ blanks() {
     done
     IFS=$OIFS
 
-    printf "$result" >> "$1-tmp"
+    printf "%s" "$result" >> "$1-tmp"
 }
 
 copy() {
     if [[ "$1" == "" ]]; then
         usage
-    elif [[ -e $snippets_dir/$1 ]]; then
+    elif [[ -e "$snippets_dir/$1" ]]; then
         blanks "$snippets_dir/$1"
-        cat "$snippets_dir/$1-tmp" | pbcopy
+        pbcopy < "$snippets_dir/$1-tmp"
         echo "Snippet text copied to clipboard."
         rm "$snippets_dir/$1-tmp"
     else
@@ -129,9 +129,9 @@ copy() {
 paste() {
     if [[ "$2" == "" ]]; then
         usage
-    elif [[ -e $snippets_dir/$2 ]]; then
+    elif [[ -e "$snippets_dir/$2" ]]; then
         blanks "$snippets_dir/$2"
-        cat "$snippets_dir/$2-tmp" | pbcopy
+        pbcopy < "$snippets_dir/$2-tmp"
         pbpaste
         rm "$snippets_dir/$2-tmp"
     else
@@ -164,7 +164,7 @@ case $(uname -a) in
 esac
 
 # Check for/create snippet directory
-if [[ ! -d $snippets_dir ]]; then
+if [[ ! -d "$snippets_dir" ]]; then
     echo "$snippets_dir doesn't exist."
     echo "Create it now? [y/n]"
     read yn
