@@ -141,15 +141,15 @@ paste() {
 
 usage() {
     echo -e "snp usage:\n"
-    echo "snp <name>                # Copy snippet to clipboard"
-    echo "snp paste <name>          # Paste name (from clipboard)"
-    echo 'snp new <name> "<text>"   # New snippet'
-    echo "snp new group <name>      # New group"
-    echo "snp list                  # List snippets"
-    echo "snp move <name> <group>   # Move snippet to group"
-    echo "snp remove <name>         # Remove snippet"
-    echo "snp remove group <name>   # Remove group"
-    echo "snp help                  # Display usage"
+    echo "snp <name>                    # Copy snippet to clipboard"
+    echo "snp paste <name>              # Paste name (from clipboard)"
+    echo 'snp new <name> "<text>"       # New snippet'
+    echo "snp new group <name>          # New group"
+    echo "snp list                      # List snippets"
+    echo "snp move <name|group> <group> # Move group or snippet to group"
+    echo "snp remove <name>             # Remove snippet"
+    echo "snp remove group <name>       # Remove group"
+    echo "snp help                      # Display usage"
 }
 
 snippets_dir=~/".snp"
