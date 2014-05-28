@@ -187,6 +187,8 @@ case $1 in
         move "$@" ;;
     r|remove)
         remove "$@" ;;
+    v|version)
+        echo "snp v0.1+dev" ;;
     h|help)
         usage ;;
     *)

@@ -29,8 +29,10 @@ snp help                      # Display usage
 * To reduce keystrokes, you are able to only use the first character of each keyword's name. For example, `snp new group <name>` can be replaced by `snp n g <name>`.
 * Groups can be nested.
 * To reference snippets that are in groups, use `group_name/snippet_name`
-* To include a new line in a snippet, use `\n`
-* You can capture program output for a snippets text using for example: `snp new <name> "$(ls)"`
+* To include a new quotation marks in a snippet, use `\"`
+* You can use shell variables for a snippet's text. Example: `snp new <name> "$foo"`
+* You can capture program output for a snippet's text. Example: `snp new <name> "$(ls)"`
+* If you are using an exclamation mark in the snippet, surround the snippet text with single quotes rather than double quotes.
 
 ### Blanks in snippets
 
