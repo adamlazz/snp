@@ -150,6 +150,7 @@ usage() {
     echo "snp remove <name>             # Remove snippet"
     echo "snp remove group <name>       # Remove group"
     echo "snp help                      # Display usage"
+    echo "snp version                   # Display version"
 }
 
 snippets_dir=~/".snp"

@@ -24,6 +24,7 @@ snp move <name|group> <group> # Move snippet to group
 snp remove <name>             # Remove snippet
 snp remove group <name>       # Remove group
 snp help                      # Display usage
+snp version                   # Display version
 ```
 
 * To reduce keystrokes, you are able to only use the first character of each keyword's name. For example, `snp new group <name>` can be replaced by `snp n g <name>`.
